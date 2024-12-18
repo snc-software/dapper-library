@@ -5,8 +5,16 @@ namespace DapperApplication;
 
 public class PostgresSqlConnectionFactory : ISqlConnectionFactory
 {
-    public IDbConnection GetConnection()
+    private readonly NpgsqlDataSource _npgSqlDataSource;
+
+    public PostgresSqlConnectionFactory(DbSettings dbSettings)
     {
-        return new NpgsqlConnection();
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(dbSettings.ConnectionString);
+        _npgSqlDataSource = dataSourceBuilder.Build();
+    }
+    
+    public async Task<IDbConnection> OpenConnection(CancellationToken cancellationToken)
+    {
+        return await _npgSqlDataSource.OpenConnectionAsync(cancellationToken);
     }
 }

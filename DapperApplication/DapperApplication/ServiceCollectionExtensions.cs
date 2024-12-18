@@ -5,15 +5,21 @@ namespace DapperApplication;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddDatabaseContext<T>(this IServiceCollection services)
+    public static IServiceCollection AddDatabaseContext<T>(
+        this IServiceCollection services)
     where T: DatabaseContext
     {
+        var dbSettings = new DbSettings();
+        services.AddSingleton(dbSettings);
         services.AddScoped<ISqlConnectionFactory, PostgresSqlConnectionFactory>();
+        services.AddScoped<IExecuteQueryProvider, ExecuteQueryProvider>();
         services.AddScoped<T>(sp =>
         {
             var connectionFactory = sp.GetRequiredService<ISqlConnectionFactory>();
+            var executeQueryProvider = sp.GetRequiredService<IExecuteQueryProvider>();
 
-            var dbContext = (DatabaseContext)Activator.CreateInstance(typeof(T), new DbSettings());
+            var dbContext = (DatabaseContext)Activator.CreateInstance(typeof(T))!;
+            dbContext.Initialise(executeQueryProvider, connectionFactory);
 
             var databaseCollectionProperties = typeof(T)
                 .GetProperties(BindingFlags.Public | BindingFlags.Instance)
@@ -27,7 +33,7 @@ public static class ServiceCollectionExtensions
                 var databaseCollectionPropertyInstance = 
                     Activator.CreateInstance(
                         typeof(DatabaseCollection<>).MakeGenericType(genericTypeArgument), 
-                        connectionFactory);
+                        connectionFactory, executeQueryProvider);
                 
                 databaseCollection.SetValue(dbContext, databaseCollectionPropertyInstance);
             }

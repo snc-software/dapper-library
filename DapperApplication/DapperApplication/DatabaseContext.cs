@@ -1,31 +1,36 @@
-using System.Reflection;
+using Dapper;
 
 namespace DapperApplication;
 
 public abstract class DatabaseContext
 {
-    protected DatabaseContext(DbSettings settings)
+    private IExecuteQueryProvider _executeQueryProvider;
+    private ISqlConnectionFactory _sqlConnectionFactory;
+
+    internal void Initialise(
+        IExecuteQueryProvider executeQueryProvider,
+        ISqlConnectionFactory sqlConnectionFactory)
     {
-        // get all db collection properties
-        // initialise
+        _executeQueryProvider = executeQueryProvider;
+        _sqlConnectionFactory = sqlConnectionFactory;
     }
 
-    public Task SaveChanges(CancellationToken cancellationToken)
+    public async Task SaveChanges(CancellationToken cancellationToken)
     {
-        var properties = GetType()
-            .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.PropertyType.IsGenericType &&
-                        p.PropertyType.GetGenericTypeDefinition() == typeof(DatabaseCollection<>));
-        // Get all database collections
-        foreach (var property in properties)
+        var databaseQueries = _executeQueryProvider.GetQueries();
+        using var connection = await _sqlConnectionFactory.OpenConnection(cancellationToken);
+        using var transaction = connection.BeginTransaction();
+        try
         {
-            // get all outstanding queries
+            foreach (var databaseQuery in databaseQueries)
+            {
+                await connection.ExecuteAsync(databaseQuery.Sql, databaseQuery.Parameters, transaction);
+            }
         }
-        
-        // build all sql commands
-        // open transaction 
-        // commit
-
-        return Task.CompletedTask;
+        catch (Exception)
+        {
+            transaction.Rollback();
+            throw;
+        }
     }
 }

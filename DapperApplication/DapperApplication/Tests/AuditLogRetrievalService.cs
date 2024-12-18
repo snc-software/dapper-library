@@ -2,7 +2,7 @@ namespace DapperApplication.Tests;
 
 public interface IAuditLogRetrievalService
 {
-    Task<AuditLog> GetAudit(Guid id);
+    Task<AuditLog> GetAudit(Guid id, CancellationToken cancellationToken);
 }
 
 public class AuditLogRetrievalService : IAuditLogRetrievalService
@@ -14,8 +14,8 @@ public class AuditLogRetrievalService : IAuditLogRetrievalService
         _context = context;
     }
 
-    public async Task<AuditLog> GetAudit(Guid id)
+    public async Task<AuditLog> GetAudit(Guid id, CancellationToken cancellationToken)
     {
-        return await _context.AuditLogs.GetById(id);
+        return await _context.AuditLogs.GetById(p => p.Id, id, cancellationToken);
     }
 }

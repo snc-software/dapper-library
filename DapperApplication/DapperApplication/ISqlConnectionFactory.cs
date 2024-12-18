@@ -4,5 +4,5 @@ namespace DapperApplication;
 
 public interface ISqlConnectionFactory
 {
-    IDbConnection GetConnection();
+    Task<IDbConnection> OpenConnection(CancellationToken cancellationToken);
 }

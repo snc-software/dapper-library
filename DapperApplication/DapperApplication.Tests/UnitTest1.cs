@@ -12,7 +12,6 @@ public class UnitTest1
             .BuildServiceProvider();
         
         var databaseContext = serviceProvider.GetRequiredService<AuditDatabaseContext>();
-
         var saveChanges = databaseContext.SaveChanges(default);
     }
 }

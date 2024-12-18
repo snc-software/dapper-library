@@ -1,29 +1,57 @@
+using System.Linq.Expressions;
 using Dapper;
+using DapperApplication.SqlBuilders;
 
 namespace DapperApplication;
 
 public class DatabaseCollection<T> where T : new()
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
-    public DatabaseCollection(ISqlConnectionFactory connectionFactory)
+    private readonly IExecuteQueryProvider _executeQueryProvider;
+    private readonly string _tableName = typeof(T).Name.Pluralise();
+    
+    public DatabaseCollection(
+        ISqlConnectionFactory connectionFactory,
+        IExecuteQueryProvider executeQueryProvider)
     {
-        Queries = [];
         _sqlConnectionFactory = connectionFactory;
+        _executeQueryProvider = executeQueryProvider;
     }
     
-    protected IEnumerable<DatabaseQuery> Queries {get; set;}
-    
-    
-    public async Task<T> GetById(Guid id)
+    public async Task<T> GetById<TValue>(Expression<Func<T, TValue>> idPropertySelector, Guid id, CancellationToken cancellationToken = default)
     {
-        using var connection = _sqlConnectionFactory.GetConnection();
-        return await connection.QueryFirstAsync<T>("SELECT * FROM \"AuditLogs\" where \"Id\" = @id",
-            new{ id });
+        var query = new SqlBuilder<T>()
+            .Select()
+            .AllProperties()
+            .FromTable(_tableName)
+            .Where(w => w.PropertyMatches(idPropertySelector, id.ToString()))
+            .BuildQuery();
+        
+        using var connection = await _sqlConnectionFactory.OpenConnection(cancellationToken);
+        return await connection.QueryFirstAsync<T>(query.Sql, query.Parameters);
     }
 
-    public async Task<IEnumerable<T>> GetAll()
+    public async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken = default)
     {
-        using var connection = _sqlConnectionFactory.GetConnection();
-        return await connection.QueryAsync<T>("SELECT * FROM \"AuditLogs\"");
+        var query = new SqlBuilder<T>()
+            .Select()
+            .AllProperties()
+            .FromTable(_tableName)
+            .BuildQuery();
+        
+        using var connection = await _sqlConnectionFactory.OpenConnection(cancellationToken);
+        return await connection.QueryAsync<T>(query.Sql);
+    }
+
+    public void Create(T entity)
+    {
+        const string Sql = "";
+        _executeQueryProvider.AddQuery(new DatabaseQuery(Sql, entity));
+    }
+    
+    public void Update(T entity)
+    {
+        const string Sql = "";
+        _executeQueryProvider.AddQuery(new DatabaseQuery(Sql, entity));
     }
 }
