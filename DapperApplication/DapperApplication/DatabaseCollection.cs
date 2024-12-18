@@ -75,12 +75,13 @@ public class DatabaseCollection<T> where T : new()
         
         _executeQueryProvider.AddQuery(databaseQuery);
     }
-    
+
     /// <summary>
     /// Queue replacement of the entity
     /// </summary>
     /// <param name="entity">Entity to replace</param>
-    public void Update(T entity)
+    /// <param name="idPropertySelector"></param>
+    public void Update<TValue>(T entity, Expression<Func<T, TValue>> idPropertySelector)
     {
         const string Sql = "";
         _executeQueryProvider.AddQuery(new DatabaseQuery(Sql, entity));

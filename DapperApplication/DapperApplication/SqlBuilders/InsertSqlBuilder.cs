@@ -5,7 +5,7 @@ namespace DapperApplication.SqlBuilders;
 public class InsertSqlBuilder<T> : SqlBuilderBase
 {
     private string _tableName = string.Empty;
-    private Dictionary<string, object> _valuesIndexedByColumnName = new();
+    private readonly Dictionary<string, object> _valuesIndexedByColumnName = new();
 
     public InsertSqlBuilder<T> IntoTable(string tableName, string schema = "public")
     {

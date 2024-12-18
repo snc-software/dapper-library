@@ -11,4 +11,14 @@ public class SqlBuilder<T>
     {
         return new InsertSqlBuilder<T>();
     }
+
+    public UpdateSqlBuilder<T> Update()
+    {
+        return new UpdateSqlBuilder<T>();
+    }
+
+    public DeleteSqlBuilder<T> Delete()
+    {
+        return new DeleteSqlBuilder<T>();
+    }
 }

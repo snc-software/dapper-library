@@ -45,6 +45,20 @@ public class SqlBuilderTests
         
         var databaseQuery = sqlBuilder.BuildQuery();
     }
+    
+    [Fact]
+    public void Update()
+    {
+        var sqlBuilder = new SqlBuilder<TestEntity>()
+            .Update()
+            .Table("Tests")
+            .SetValue(p => p.Id, Guid.NewGuid().ToString())
+            .SetValue(p => p.Description, "Bananas")
+            .SetValue(p => p.Age, 10.ToString())
+            .Where(w => w.PropertyMatches(p => p.Id, Guid.NewGuid().ToString()));
+        
+        var databaseQuery = sqlBuilder.BuildQuery();
+    }
 }
 
 
