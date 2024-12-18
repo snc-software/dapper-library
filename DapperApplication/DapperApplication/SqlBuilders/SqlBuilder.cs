@@ -6,4 +6,9 @@ public class SqlBuilder<T>
     {
         return new SelectSqlBuilder<T>();
     }
+
+    public InsertSqlBuilder<T> Insert()
+    {
+        return new InsertSqlBuilder<T>();
+    }
 }

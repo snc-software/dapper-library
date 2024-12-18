@@ -2,7 +2,7 @@ using System.Linq.Expressions;
 
 namespace DapperApplication.SqlBuilders;
 
-public class SelectSqlBuilder<T>
+public class SelectSqlBuilder<T> : SqlBuilderBase
 {
     private readonly List<string> _columns = [];
     private string _fromTable = string.Empty;
@@ -42,7 +42,7 @@ public class SelectSqlBuilder<T>
         return this;
     }
 
-    public DatabaseQuery BuildQuery()
+    public override DatabaseQuery BuildQuery()
     {
         var sql = string.Format(BaseSqlFormat, string.Join(',', _columns), _fromTable);
         

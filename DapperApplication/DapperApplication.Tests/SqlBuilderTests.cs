@@ -32,6 +32,19 @@ public class SqlBuilderTests
                 .PropertyMatches(p => p.Description, "Bananas"));
         var databaseQuery = sqlBuilder.BuildQuery();
     }
+
+    [Fact]
+    public void Insert()
+    {
+        var sqlBuilder = new SqlBuilder<TestEntity>()
+            .Insert()
+            .IntoTable("Tests")
+            .Value(p => p.Id, Guid.NewGuid().ToString())
+            .Value(p => p.Description, "Bananas")
+            .Value(p => p.Age, 10.ToString());
+        
+        var databaseQuery = sqlBuilder.BuildQuery();
+    }
 }
 
 
