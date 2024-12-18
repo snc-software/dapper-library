@@ -4,8 +4,6 @@ namespace DapperApplication.SqlBuilders;
 
 public class UpdateSqlBuilder<T> : SqlBuilderBase
 {
-    
-    
     private readonly WhereClauseSqlBuilder<T> _whereClauseBuilder = new();
     private string _tableName = string.Empty;
     private readonly Dictionary<string, object> _valuesIndexedByColumnName = new();
@@ -39,10 +37,6 @@ public class UpdateSqlBuilder<T> : SqlBuilderBase
     
     public override DatabaseQuery BuildQuery()
     {
-        // UPDATE public."Items"
-        // SET "Id"=?, "Hash"=?, "Title"=?, "DateTime"=?, "Category"=?, "Size"=?, "Imdb"=?
-        // WHERE <condition>;
-        
         var sql = $"UPDATE {_tableName}";
         var propertySql = string.Join(", ", _valuesIndexedByColumnName.Keys.Select(p => $"\"{p}\"=@{p}"));
         sql += $" SET {propertySql}";
