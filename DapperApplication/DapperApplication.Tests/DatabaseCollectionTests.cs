@@ -1,3 +1,4 @@
+using DapperApplication.Tests.Models;
 using NSubstitute;
 
 namespace DapperApplication.Tests;

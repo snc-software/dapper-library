@@ -13,4 +13,9 @@ public class ExecuteQueryProvider : IExecuteQueryProvider
     {
         return _queries;
     }
+
+    public void Clear()
+    {
+        _queries.Clear();
+    }
 }

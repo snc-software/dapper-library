@@ -1,4 +1,4 @@
-namespace DapperApplication.Tests;
+namespace DapperApplication.Tests.Models;
 
 public interface IAuditLogRetrievalService
 {

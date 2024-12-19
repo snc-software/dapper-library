@@ -4,8 +4,11 @@ namespace DapperApplication;
 
 public abstract class DatabaseContext
 {
+    // Ignoring as initialise is called during DI setup
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
     private IExecuteQueryProvider _executeQueryProvider;
     private ISqlConnectionFactory _sqlConnectionFactory;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
     internal void Initialise(
         IExecuteQueryProvider executeQueryProvider,
@@ -26,6 +29,8 @@ public abstract class DatabaseContext
             {
                 await connection.ExecuteAsync(databaseQuery.Sql, databaseQuery.Parameters, transaction);
             }
+            transaction.Commit();
+            _executeQueryProvider.Clear();
         }
         catch (Exception)
         {

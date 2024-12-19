@@ -1,6 +1,6 @@
 using DapperApplication.Attributes;
 
-namespace DapperApplication.Tests;
+namespace DapperApplication.Tests.Models;
 
 [TableName("Logs")]
 public class TypedAuditLog
