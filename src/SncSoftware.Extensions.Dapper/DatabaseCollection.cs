@@ -68,7 +68,7 @@ public class DatabaseCollection<T> where T : new()
             .Select()
             .AllProperties()
             .FromTable(_tableName)
-            .Where(w => w.PropertyMatches(idPropertySelector, id.ToString()))
+            .Where(w => w.PropertyMatches(idPropertySelector, id))
             .BuildQuery();
 
         using var connection = await _sqlConnectionFactory.OpenConnection(cancellationToken);
@@ -199,7 +199,7 @@ public class DatabaseCollection<T> where T : new()
         var query = new SqlBuilder<T>()
             .Delete()
             .FromTable(_tableName)
-            .Where(w => w.PropertyMatches(primaryIdentifierProperty.Name, id.ToString()))
+            .Where(w => w.PropertyMatches(primaryIdentifierProperty.Name, id))
             .BuildQuery();
 
         _executeQueryProvider.AddQuery(query);
@@ -217,7 +217,7 @@ public class DatabaseCollection<T> where T : new()
         var query = new SqlBuilder<T>()
             .Delete()
             .FromTable(_tableName)
-            .Where(w => w.PropertyMatches(idPropertySelector, id.ToString()))
+            .Where(w => w.PropertyMatches(idPropertySelector, id))
             .BuildQuery();
 
         _executeQueryProvider.AddQuery(query);
