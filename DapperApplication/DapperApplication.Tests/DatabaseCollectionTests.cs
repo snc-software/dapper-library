@@ -38,4 +38,14 @@ public class DatabaseCollectionTests
             Body = "Hello i am the body"
         });
     }
+    
+    [Fact]
+    public void Update()
+    {
+        _databaseCollection.Update(new AuditLog
+        {
+            Id = Guid.NewGuid(),
+            Body = "Hello i am the body"
+        }, x => x.Id);
+    }
 }

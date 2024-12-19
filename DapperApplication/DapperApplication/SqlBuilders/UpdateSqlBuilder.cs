@@ -23,7 +23,7 @@ public class UpdateSqlBuilder<T> : SqlBuilderBase
         return this;
     }
     
-    public UpdateSqlBuilder<T> Property(string columnName, string value)
+    public UpdateSqlBuilder<T> SetValue(string columnName, string value)
     {
         _valuesIndexedByColumnName.Add(columnName, value);
         return this;
@@ -40,12 +40,20 @@ public class UpdateSqlBuilder<T> : SqlBuilderBase
         var sql = $"UPDATE {_tableName}";
         var propertySql = string.Join(", ", _valuesIndexedByColumnName.Keys.Select(p => $"\"{p}\"=@{p}"));
         sql += $" SET {propertySql}";
+        var parameters = _valuesIndexedByColumnName;
+        
         var whereClauseBuilder = _whereClauseBuilder.Build();
+        
         if (!string.IsNullOrWhiteSpace(whereClauseBuilder.WhereClause))
         {
             sql += $" {whereClauseBuilder.WhereClause}";
+            var allParameters = new List<Dictionary<string, object>>()
+            {
+                _valuesIndexedByColumnName, whereClauseBuilder.Parameters
+            };
+            parameters = allParameters.SelectMany(dict => dict).ToDictionary();
         }
 
-        return new DatabaseQuery(sql, _valuesIndexedByColumnName);
+        return new DatabaseQuery(sql, parameters);
     }
 }

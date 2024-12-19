@@ -83,8 +83,24 @@ public class DatabaseCollection<T> where T : new()
     /// <param name="idPropertySelector"></param>
     public void Update<TValue>(T entity, Expression<Func<T, TValue>> idPropertySelector)
     {
-        const string Sql = "";
-        _executeQueryProvider.AddQuery(new DatabaseQuery(Sql, entity));
+        var properties = typeof(T).GetProperties();
+        
+        var propertySelectorBody = idPropertySelector.Body as MemberExpression;
+        var idPropertyName = propertySelectorBody!.Member.Name;
+        var idProperty = properties.FirstOrDefault(w => w.Name == idPropertyName);
+
+        var sqlBuilder = new SqlBuilder<T>()
+            .Update()
+            .Table(_tableName);
+        foreach (var property in properties.Except([idProperty]))
+        {
+            sqlBuilder.SetValue(property.Name, property.GetValue(entity).ToString());
+        }
+        sqlBuilder.Where(w => w.PropertyMatches(idProperty.Name, idProperty.GetValue(entity).ToString()));
+        
+        var databaseQuery = sqlBuilder.BuildQuery();
+        
+        _executeQueryProvider.AddQuery(databaseQuery);
     }
 
     /// <summary>
