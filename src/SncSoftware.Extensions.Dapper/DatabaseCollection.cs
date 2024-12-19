@@ -36,7 +36,7 @@ public class DatabaseCollection<T> where T : new()
     /// <param name="id">id value to match on</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns></returns>
-    public async Task<T> GetById(Guid id, CancellationToken cancellationToken = default)
+    public async Task<T?> GetById(Guid id, CancellationToken cancellationToken = default)
     {
         var primaryIdentifierProperty = typeof(T).ReflectPrimaryIdentifierProperty();
         if (primaryIdentifierProperty == null)
@@ -52,7 +52,7 @@ public class DatabaseCollection<T> where T : new()
             .BuildQuery();
 
         using var connection = await _sqlConnectionFactory.OpenConnection(cancellationToken);
-        return await connection.QueryFirstAsync<T>(query.Sql, query.Parameters);
+        return await connection.QuerySingleOrDefaultAsync<T>(query.Sql, query.Parameters);
     }
 
     /// <summary>
