@@ -14,7 +14,7 @@ public class InsertSqlBuilder<T> : SqlBuilderBase
     }
 
     public InsertSqlBuilder<T> Value<TValue>(
-        Expression<Func<T, TValue>> propertySelector, string value)
+        Expression<Func<T, TValue>> propertySelector, object value)
     {
         var propertySelectorBody = propertySelector.Body as MemberExpression;
         var memberName = propertySelectorBody!.Member.Name;
@@ -23,7 +23,7 @@ public class InsertSqlBuilder<T> : SqlBuilderBase
         return this;
     }
 
-    public InsertSqlBuilder<T> Value(string columnName, string value)
+    public InsertSqlBuilder<T> Value(string columnName, object value)
     {
         _valuesIndexedByColumnName.Add(columnName, value);
         return this;
@@ -31,8 +31,22 @@ public class InsertSqlBuilder<T> : SqlBuilderBase
 
     public override DatabaseQuery BuildQuery()
     {
-        var columnsSql = string.Join(',', _valuesIndexedByColumnName.Keys.Select(x => $"\"{x}\""));
-        var valuesSql = string.Join(',', _valuesIndexedByColumnName.Keys.Select(x => $"@{x}"));
+        var columns = new List<string>();
+        var valueParameters = new List<string>();
+        foreach (var (key, value) in _valuesIndexedByColumnName)
+        {
+            columns.Add($"\"{key}\"");
+            var type = value.GetType();
+            if (type == typeof(Guid))
+            {
+                valueParameters.Add($"@{key}");
+                continue;
+            }
+            valueParameters.Add($"@{key}");
+        }
+
+        var columnsSql = string.Join(',', columns);
+        var valuesSql = string.Join(',', valueParameters);
         var sql = $"INSERT INTO {_tableName} ({columnsSql}) VALUES ({valuesSql})";
 
         return new DatabaseQuery(sql, _valuesIndexedByColumnName);

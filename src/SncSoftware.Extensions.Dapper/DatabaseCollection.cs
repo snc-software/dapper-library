@@ -113,7 +113,7 @@ public class DatabaseCollection<T> where T : new()
             .IntoTable(_tableName);
         foreach (var property in properties)
         {
-            sqlBuilder.Value(property.Name, property.GetValue(entity).ToString());
+            sqlBuilder.Value(property.Name, property.GetValue(entity));
         }
 
         var databaseQuery = sqlBuilder.BuildQuery();
@@ -137,15 +137,15 @@ public class DatabaseCollection<T> where T : new()
         var propertySelectorBody = idPropertySelector.Body as MemberExpression;
         var idPropertyName = propertySelectorBody!.Member.Name;
         var idProperty = properties.FirstOrDefault(w => w.Name == idPropertyName);
-        
+
         var sqlBuilder = new SqlBuilder<T>()
             .Update()
             .Table(_tableName);
         foreach (var property in properties.Except([idProperty]))
         {
-            sqlBuilder.SetValue(property.Name, property.GetValue(entity).ToString());
+            sqlBuilder.SetValue(property.Name, property.GetValue(entity));
         }
-        sqlBuilder.Where(w => w.PropertyMatches(idProperty.Name, idProperty.GetValue(entity).ToString()));
+        sqlBuilder.Where(w => w.PropertyMatches(idProperty.Name, idProperty.GetValue(entity)));
 
         var databaseQuery = sqlBuilder.BuildQuery();
 
@@ -170,9 +170,9 @@ public class DatabaseCollection<T> where T : new()
             .Table(_tableName);
         foreach (var property in properties.Except([primaryIdentifierProperty]))
         {
-            sqlBuilder.SetValue(property.Name, property.GetValue(entity).ToString());
+            sqlBuilder.SetValue(property.Name, property.GetValue(entity));
         }
-        sqlBuilder.Where(w => w.PropertyMatches(primaryIdentifierProperty.Name, primaryIdentifierProperty.GetValue(entity).ToString()));
+        sqlBuilder.Where(w => w.PropertyMatches(primaryIdentifierProperty.Name, primaryIdentifierProperty.GetValue(entity)));
 
         var databaseQuery = sqlBuilder.BuildQuery();
 

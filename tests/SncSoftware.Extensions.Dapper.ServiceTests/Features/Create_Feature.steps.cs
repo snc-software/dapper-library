@@ -8,34 +8,31 @@ using SncSoftware.Extensions.Dapper.ServiceTests.Infrastructure.Persistence;
 
 namespace SncSoftware.Extensions.Dapper.ServiceTests.Features;
 
-public partial class Get_By_Id_Feature : FeatureFixture
+public partial class Create_Feature : FeatureFixture
 {
     private static readonly TestDatabaseContext DatabaseContext =
         ServiceCollectionFactory.Instance.ServiceProvider.GetRequiredService<TestDatabaseContext>();
 
     private readonly TestEntity _entity;
-    private TestEntity _retrievedEntity;
 
-    public Get_By_Id_Feature()
+    public Create_Feature()
     {
         var fixture = new Fixture();
         _entity = fixture.Create<TestEntity>();
     }
 
-    private async Task Entity_exists_in_database()
+    private async Task Create_is_requested_and_saved()
     {
-        await TestEntityPostgresProvider.Insert(_entity);
+        DatabaseContext.TestEntities.Create(_entity);
+        await DatabaseContext.SaveChanges(CancellationToken.None);
     }
 
-    private async Task Get_By_Id_is_requested()
+    private async Task Entity_is_created_in_the_database()
     {
-        _retrievedEntity = await DatabaseContext.TestEntities.GetById(_entity.Id);
+        var retrievedEntity = await TestEntityPostgresProvider.Get(_entity.Id);
+
+        retrievedEntity.Should().NotBeNull();
+        retrievedEntity.Should().BeEquivalentTo(_entity);
     }
 
-    private Task Retrieved_entity_should_match_source()
-    {
-        _retrievedEntity.Should().BeEquivalentTo(_entity);
-
-        return Task.CompletedTask;
-    }
 }

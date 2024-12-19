@@ -14,7 +14,7 @@ public class UpdateSqlBuilder<T> : SqlBuilderBase
         return this;
     }
 
-    public UpdateSqlBuilder<T> SetValue<TValue>(Expression<Func<T, TValue>> propertySelector, string value)
+    public UpdateSqlBuilder<T> SetValue<TValue>(Expression<Func<T, TValue>> propertySelector, object value)
     {
         var propertySelectorBody = propertySelector.Body as MemberExpression;
         var memberName = propertySelectorBody!.Member.Name;
@@ -23,7 +23,7 @@ public class UpdateSqlBuilder<T> : SqlBuilderBase
         return this;
     }
 
-    public UpdateSqlBuilder<T> SetValue(string columnName, string value)
+    public UpdateSqlBuilder<T> SetValue(string columnName, object value)
     {
         _valuesIndexedByColumnName.Add(columnName, value);
         return this;

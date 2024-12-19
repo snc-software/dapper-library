@@ -3,7 +3,7 @@ using SncSoftware.Extensions.Dapper.Attributes;
 namespace SncSoftware.Extensions.Dapper.ServiceTests.Contracts;
 
 [TableName("TestEntities")]
-public class TestEntity
+public record TestEntity
 {
     [PrimaryIdentifier]
     public Guid Id { get; set; }
