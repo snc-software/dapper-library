@@ -58,4 +58,11 @@ public class DatabaseCollectionTests
             Body = "Hello i am the body"
         });
     }
+
+    [Fact]
+    public void Delete()
+    {
+        _databaseCollection.DeleteById(p => p.Id, Guid.NewGuid());
+        _typedDatabaseCollection.DeleteById(Guid.NewGuid());
+    }
 }

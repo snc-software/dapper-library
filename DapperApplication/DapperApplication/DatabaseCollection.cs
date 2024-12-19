@@ -178,6 +178,50 @@ public class DatabaseCollection<T> where T : new()
     
     #endregion
     
+    #region Delete
+    
+    /// <summary>
+    /// Delete an entity by its identifier
+    /// </summary>
+    /// <param name="id">id value to match on</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns></returns>
+    public void DeleteById(Guid id, CancellationToken cancellationToken = default)
+    {
+        var primaryIdentifierProperty = typeof(T).ReflectPrimaryIdentifierProperty();
+        if (primaryIdentifierProperty == null)
+        {
+            throw new MissingPrimaryIdentifierException(typeof(T).Name);
+        }
+        var query = new SqlBuilder<T>()
+            .Delete()
+            .FromTable(_tableName)
+            .Where(w => w.PropertyMatches(primaryIdentifierProperty.Name, id.ToString()))
+            .BuildQuery();
+        
+        _executeQueryProvider.AddQuery(query);
+    }
+    
+    /// <summary>
+    /// Delete an entity by its identifier
+    /// </summary>
+    /// <param name="idPropertySelector">Property selector for id property</param>
+    /// <param name="id">id value to match on</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns></returns>
+    public void DeleteById<TValue>(Expression<Func<T, TValue>> idPropertySelector, Guid id, CancellationToken cancellationToken = default)
+    {
+        var query = new SqlBuilder<T>()
+            .Delete()
+            .FromTable(_tableName)
+            .Where(w => w.PropertyMatches(idPropertySelector, id.ToString()))
+            .BuildQuery();
+        
+        _executeQueryProvider.AddQuery(query);
+    }
+    
+    #endregion
+    
     #region Custom
 
     /// <summary>

@@ -7,9 +7,9 @@ public class PostgresSqlConnectionFactory : ISqlConnectionFactory
 {
     private readonly NpgsqlDataSource _npgSqlDataSource;
 
-    public PostgresSqlConnectionFactory(DbSettings dbSettings)
+    public PostgresSqlConnectionFactory(DatabaseSettings databaseSettings)
     {
-        var dataSourceBuilder = new NpgsqlDataSourceBuilder(dbSettings.ConnectionString);
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(databaseSettings.ConnectionString);
         _npgSqlDataSource = dataSourceBuilder.Build();
     }
     

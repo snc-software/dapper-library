@@ -9,7 +9,7 @@ public static class ServiceCollectionExtensions
         this IServiceCollection services)
     where T: DatabaseContext
     {
-        var dbSettings = new DbSettings();
+        var dbSettings = new DatabaseSettings();
         services.AddSingleton(dbSettings);
         services.AddScoped<ISqlConnectionFactory, PostgresSqlConnectionFactory>();
         services.AddScoped<IExecuteQueryProvider, ExecuteQueryProvider>();

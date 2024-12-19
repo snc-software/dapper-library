@@ -1,6 +1,6 @@
 namespace DapperApplication;
 
-public record DbSettings
+public record DatabaseSettings
 {
     public string ConnectionString { get; set; }
 }

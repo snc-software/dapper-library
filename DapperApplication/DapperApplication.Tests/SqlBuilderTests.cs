@@ -59,6 +59,17 @@ public class SqlBuilderTests
         
         var databaseQuery = sqlBuilder.BuildQuery();
     }
+    
+    [Fact]
+    public void Delete()
+    {
+        var sqlBuilder = new SqlBuilder<TestEntity>()
+            .Delete()
+            .FromTable("Tests")
+            .Where(w => w.PropertyMatches(p => p.Id, Guid.NewGuid().ToString()));
+        
+        var databaseQuery = sqlBuilder.BuildQuery();
+    }
 }
 
 
