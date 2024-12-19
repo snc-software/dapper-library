@@ -17,7 +17,7 @@ public class DatabaseCollection<T> where T : new()
     private readonly IExecuteQueryProvider _executeQueryProvider;
     private readonly string _tableName;
 
-    internal DatabaseCollection(
+    public DatabaseCollection(
         ISqlConnectionFactory connectionFactory,
         IExecuteQueryProvider executeQueryProvider)
     {
@@ -48,7 +48,7 @@ public class DatabaseCollection<T> where T : new()
             .Select()
             .AllProperties()
             .FromTable(_tableName)
-            .Where(w => w.PropertyMatches(primaryIdentifierProperty.Name, id.ToString()))
+            .Where(w => w.PropertyMatches(primaryIdentifierProperty.Name, id))
             .BuildQuery();
 
         using var connection = await _sqlConnectionFactory.OpenConnection(cancellationToken);

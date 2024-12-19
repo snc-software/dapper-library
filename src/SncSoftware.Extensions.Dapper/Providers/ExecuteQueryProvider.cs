@@ -1,6 +1,6 @@
 namespace SncSoftware.Extensions.Dapper.Providers;
 
-internal class ExecuteQueryProvider : IExecuteQueryProvider
+public class ExecuteQueryProvider : IExecuteQueryProvider
 {
     private readonly List<DatabaseQuery> _queries = [];
 

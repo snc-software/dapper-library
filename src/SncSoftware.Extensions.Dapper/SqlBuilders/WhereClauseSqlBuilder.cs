@@ -23,9 +23,25 @@ public class WhereClauseSqlBuilder<T>
         return this;
     }
 
+    public WhereClauseSqlBuilder<T> PropertyMatches<TValue>(Expression<Func<T, TValue>> propertySelector, Guid value)
+    {
+        var propertySelectorBody = propertySelector.Body as MemberExpression;
+        var memberName = propertySelectorBody!.Member.Name;
+        _whereClauseStringBuilder.Append($"\"{memberName}\" = @{memberName}::uuid");
+        _parameters.Add(memberName, value);
+        return this;
+    }
+
     public WhereClauseSqlBuilder<T> PropertyMatches(string propertyName, string value)
     {
         _whereClauseStringBuilder.Append($"\"{propertyName}\" = @{propertyName}");
+        _parameters.Add(propertyName, value);
+        return this;
+    }
+
+    public WhereClauseSqlBuilder<T> PropertyMatches(string propertyName, Guid value)
+    {
+        _whereClauseStringBuilder.Append($"\"{propertyName}\" = @{propertyName}::uuid");
         _parameters.Add(propertyName, value);
         return this;
     }

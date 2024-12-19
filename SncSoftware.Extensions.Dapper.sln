@@ -8,6 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D4F9BDB3
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SncSoftware.Extensions.Dapper.UnitTests", "tests\SncSoftware.Extensions.Dapper.UnitTests\SncSoftware.Extensions.Dapper.UnitTests.csproj", "{692AF9A3-BBB9-4FD9-B468-EF1775F41C67}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SncSoftware.Extensions.Dapper.ServiceTests", "tests\SncSoftware.Extensions.Dapper.ServiceTests\SncSoftware.Extensions.Dapper.ServiceTests.csproj", "{2CD20085-2E2A-413F-A84A-5D1C8D8875DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -16,6 +18,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{9CEC0444-AC3B-44E5-BEC4-6C3D309853C8} = {EFA0445F-EEF4-4A14-90D1-30131F194A9D}
 		{692AF9A3-BBB9-4FD9-B468-EF1775F41C67} = {D4F9BDB3-8A72-4FC0-970C-F81715E5BA43}
+		{2CD20085-2E2A-413F-A84A-5D1C8D8875DD} = {D4F9BDB3-8A72-4FC0-970C-F81715E5BA43}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{9CEC0444-AC3B-44E5-BEC4-6C3D309853C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -26,5 +29,9 @@ Global
 		{692AF9A3-BBB9-4FD9-B468-EF1775F41C67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{692AF9A3-BBB9-4FD9-B468-EF1775F41C67}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{692AF9A3-BBB9-4FD9-B468-EF1775F41C67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CD20085-2E2A-413F-A84A-5D1C8D8875DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CD20085-2E2A-413F-A84A-5D1C8D8875DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CD20085-2E2A-413F-A84A-5D1C8D8875DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CD20085-2E2A-413F-A84A-5D1C8D8875DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

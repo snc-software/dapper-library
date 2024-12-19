@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SncSoftware.Extensions.Dapper.Factories;
 using SncSoftware.Extensions.Dapper.Providers;
@@ -8,11 +9,11 @@ namespace SncSoftware.Extensions.Dapper;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDatabaseContext<T>(
-        this IServiceCollection services)
+        this IServiceCollection services, IConfiguration configuration, string configurationRootKey = "Postgres")
         where T : DatabaseContext
     {
-        var dbSettings = new DatabaseSettings();
-        services.AddSingleton(dbSettings);
+        var dbSettings = configuration.GetSection(configurationRootKey).Get<DatabaseSettings>();
+        services.AddSingleton(dbSettings!);
         services.AddScoped<ISqlConnectionFactory, PostgresSqlConnectionFactory>();
         services.AddScoped<IExecuteQueryProvider, ExecuteQueryProvider>();
         services.AddScoped<T>(sp =>

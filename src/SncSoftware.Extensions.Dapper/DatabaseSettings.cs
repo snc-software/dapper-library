@@ -2,6 +2,5 @@ namespace SncSoftware.Extensions.Dapper;
 
 public record DatabaseSettings
 {
-    public string ConnectionString { get; set; } =
-        "Server=localhost;Port=5432;Database=postgres;User Id=postgres;Password=postgres;";
+    public string ConnectionString { get; set; }
 }
