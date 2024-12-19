@@ -48,7 +48,7 @@ public class WhereClauseSqlBuilder<T>
 
     public (string WhereClause, Dictionary<string, object> Parameters) Build()
     {
-        var whereClause = $"WHERE {_whereClauseStringBuilder}";
+        var whereClause = _whereClauseStringBuilder.ToString();
         return (whereClause, _parameters);
     }
 }

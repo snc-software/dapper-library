@@ -1,3 +1,4 @@
+using AutoFixture;
 using FluentAssertions;
 using LightBDD.XUnit2;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,16 +15,12 @@ public partial class Get_By_Id_Feature : FeatureFixture
 
     private readonly TestEntity _entity;
     private TestEntity _retrievedEntity;
+    private readonly IFixture _fixture;
 
     public Get_By_Id_Feature()
     {
-        _entity = new TestEntity
-        {
-            Id = Guid.NewGuid(),
-            Age = Random.Shared.Next(18, 60),
-            Description = $"Description{Guid.NewGuid()}",
-            Enabled = Random.Shared.Next(100) < 50
-        };
+        _fixture = new Fixture();
+        _entity = _fixture.Create<TestEntity>();
     }
 
     private async Task Entity_exists_in_database()

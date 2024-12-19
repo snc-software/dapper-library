@@ -49,7 +49,7 @@ public class SelectSqlBuilder<T> : SqlBuilderBase
         var whereClauseBuilder = _whereClauseBuilder.Build();
         if (!string.IsNullOrWhiteSpace(whereClauseBuilder.WhereClause))
         {
-            sql += $" {whereClauseBuilder.WhereClause}";
+            sql += $" WHERE {whereClauseBuilder.WhereClause}";
         }
         return new DatabaseQuery(sql, whereClauseBuilder.Parameters.Count != 0 ? whereClauseBuilder.Parameters : null);
     }

@@ -137,7 +137,7 @@ public class DatabaseCollection<T> where T : new()
         var propertySelectorBody = idPropertySelector.Body as MemberExpression;
         var idPropertyName = propertySelectorBody!.Member.Name;
         var idProperty = properties.FirstOrDefault(w => w.Name == idPropertyName);
-
+        
         var sqlBuilder = new SqlBuilder<T>()
             .Update()
             .Table(_tableName);
@@ -187,9 +187,8 @@ public class DatabaseCollection<T> where T : new()
     /// Delete an entity by its identifier
     /// </summary>
     /// <param name="id">id value to match on</param>
-    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns></returns>
-    public void DeleteById(Guid id, CancellationToken cancellationToken = default)
+    public void DeleteById(Guid id)
     {
         var primaryIdentifierProperty = typeof(T).ReflectPrimaryIdentifierProperty();
         if (primaryIdentifierProperty == null)
@@ -210,9 +209,8 @@ public class DatabaseCollection<T> where T : new()
     /// </summary>
     /// <param name="idPropertySelector">Property selector for id property</param>
     /// <param name="id">id value to match on</param>
-    /// <param name="cancellationToken">Cancellation token</param>
     /// <returns></returns>
-    public void DeleteById<TValue>(Expression<Func<T, TValue>> idPropertySelector, Guid id, CancellationToken cancellationToken = default)
+    public void DeleteById<TValue>(Expression<Func<T, TValue>> idPropertySelector, Guid id)
     {
         var query = new SqlBuilder<T>()
             .Delete()

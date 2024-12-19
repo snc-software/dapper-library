@@ -46,7 +46,7 @@ public class UpdateSqlBuilder<T> : SqlBuilderBase
 
         if (!string.IsNullOrWhiteSpace(whereClauseBuilder.WhereClause))
         {
-            sql += $" {whereClauseBuilder.WhereClause}";
+            sql += $" WHERE {whereClauseBuilder.WhereClause}";
             var allParameters = new List<Dictionary<string, object>>()
             {
                 _valuesIndexedByColumnName, whereClauseBuilder.Parameters
