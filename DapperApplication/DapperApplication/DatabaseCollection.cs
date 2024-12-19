@@ -1,5 +1,9 @@
 using System.Linq.Expressions;
+using System.Reflection;
 using Dapper;
+using DapperApplication.Attributes;
+using DapperApplication.Exceptions;
+using DapperApplication.Reflection;
 using DapperApplication.SqlBuilders;
 
 namespace DapperApplication;
@@ -8,7 +12,7 @@ public class DatabaseCollection<T> where T : new()
 {
     private readonly ISqlConnectionFactory _sqlConnectionFactory;
     private readonly IExecuteQueryProvider _executeQueryProvider;
-    private readonly string _tableName = typeof(T).Name.Pluralise();
+    private readonly string _tableName;
     
     public DatabaseCollection(
         ISqlConnectionFactory connectionFactory,
@@ -16,6 +20,36 @@ public class DatabaseCollection<T> where T : new()
     {
         _sqlConnectionFactory = connectionFactory;
         _executeQueryProvider = executeQueryProvider;
+
+        var tableNameAttribute = typeof(T).GetCustomAttribute<TableNameAttribute>();
+        _tableName = tableNameAttribute != null ? tableNameAttribute.TableName : typeof(T).Name.Pluralise();
+    }
+    
+    #region GetById
+    
+    /// <summary>
+    /// Get an entity by its identifier
+    /// </summary>
+    /// <param name="id">id value to match on</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns></returns>
+    public async Task<T> GetById(Guid id, CancellationToken cancellationToken = default)
+    {
+        var primaryIdentifierProperty = typeof(T).ReflectPrimaryIdentifierProperty();
+        if (primaryIdentifierProperty == null)
+        {
+            throw new MissingPrimaryIdentifierException(typeof(T).Name);
+        }
+        
+        var query = new SqlBuilder<T>()
+            .Select()
+            .AllProperties()
+            .FromTable(_tableName)
+            .Where(w => w.PropertyMatches(primaryIdentifierProperty.Name, id.ToString()))
+            .BuildQuery();
+        
+        using var connection = await _sqlConnectionFactory.OpenConnection(cancellationToken);
+        return await connection.QueryFirstAsync<T>(query.Sql, query.Parameters);
     }
     
     /// <summary>
@@ -37,7 +71,11 @@ public class DatabaseCollection<T> where T : new()
         using var connection = await _sqlConnectionFactory.OpenConnection(cancellationToken);
         return await connection.QueryFirstAsync<T>(query.Sql, query.Parameters);
     }
+    
+    #endregion
 
+    #region GetAll
+    
     /// <summary>
     /// Get all items
     /// </summary>
@@ -54,6 +92,10 @@ public class DatabaseCollection<T> where T : new()
         using var connection = await _sqlConnectionFactory.OpenConnection(cancellationToken);
         return await connection.QueryAsync<T>(query.Sql);
     }
+    
+    #endregion
+    
+    #region Create
 
     /// <summary>
     /// Queue creation of the entity
@@ -61,7 +103,7 @@ public class DatabaseCollection<T> where T : new()
     /// <param name="entity">Entity to create</param>
     public void Create(T entity)
     {
-        var properties = typeof(T).GetProperties();
+        var properties = typeof(T).ReflectProperties();
 
         var sqlBuilder = new SqlBuilder<T>()
             .Insert()
@@ -75,7 +117,11 @@ public class DatabaseCollection<T> where T : new()
         
         _executeQueryProvider.AddQuery(databaseQuery);
     }
+    
+    #endregion
 
+    #region Update
+    
     /// <summary>
     /// Queue replacement of the entity
     /// </summary>
@@ -83,7 +129,7 @@ public class DatabaseCollection<T> where T : new()
     /// <param name="idPropertySelector"></param>
     public void Update<TValue>(T entity, Expression<Func<T, TValue>> idPropertySelector)
     {
-        var properties = typeof(T).GetProperties();
+        var properties = typeof(T).ReflectProperties();
         
         var propertySelectorBody = idPropertySelector.Body as MemberExpression;
         var idPropertyName = propertySelectorBody!.Member.Name;
@@ -102,6 +148,37 @@ public class DatabaseCollection<T> where T : new()
         
         _executeQueryProvider.AddQuery(databaseQuery);
     }
+    
+    /// <summary>
+    /// Queue replacement of the entity
+    /// </summary>
+    /// <param name="entity">Entity to replace</param>
+    public void Update(T entity)
+    {
+        var properties = typeof(T).ReflectProperties();
+        var primaryIdentifierProperty = typeof(T).ReflectPrimaryIdentifierProperty();
+        if (primaryIdentifierProperty == null)
+        {
+            throw new MissingPrimaryIdentifierException(typeof(T).Name);
+        }
+        
+        var sqlBuilder = new SqlBuilder<T>()
+            .Update()
+            .Table(_tableName);
+        foreach (var property in properties.Except([primaryIdentifierProperty]))
+        {
+            sqlBuilder.SetValue(property.Name, property.GetValue(entity).ToString());
+        }
+        sqlBuilder.Where(w => w.PropertyMatches(primaryIdentifierProperty.Name, primaryIdentifierProperty.GetValue(entity).ToString()));
+        
+        var databaseQuery = sqlBuilder.BuildQuery();
+        
+        _executeQueryProvider.AddQuery(databaseQuery);
+    }
+    
+    #endregion
+    
+    #region Custom
 
     /// <summary>
     /// Fetch single item
@@ -136,4 +213,6 @@ public class DatabaseCollection<T> where T : new()
     {
         _executeQueryProvider.AddQuery(query);
     }
+    
+    #endregion
 }
