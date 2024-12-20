@@ -16,7 +16,7 @@ public class ConfiguredLightBddScopeAttribute : LightBddScopeAttribute
 
     protected override void OnSetUp()
     {
-        var postgresSettings = Settings.Configuration.GetSection("Postgres").Get<DatabaseSettings>();
+        var postgresSettings = Settings.DatabaseSettings;
         var postgresDatabase = Settings.DatabaseName;
         _postgresDatabaseMigrator = new PostgresDatabaseMigrator(postgresSettings.ConnectionString, postgresDatabase);
         _postgresContainer = new PostgreSqlBuilder()

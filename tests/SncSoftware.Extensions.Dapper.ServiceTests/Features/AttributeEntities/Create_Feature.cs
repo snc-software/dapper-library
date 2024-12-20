@@ -1,7 +1,7 @@
 using LightBDD.Framework.Scenarios;
 using LightBDD.XUnit2;
 
-namespace SncSoftware.Extensions.Dapper.ServiceTests.Features;
+namespace SncSoftware.Extensions.Dapper.ServiceTests.Features.AttributeEntities;
 
 public partial class Create_Feature
 {

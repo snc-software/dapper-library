@@ -35,7 +35,11 @@
 
     <ItemGroup>
       <None Remove="Infrastructure\Persistence\Migrations\20241219163300_CreateTestEntitiesTable.sql" />
-      <EmbeddedResource Include="Infrastructure\Persistence\Migrations\20241219163300_CreateTestEntitiesTable.sql" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Infrastructure\Persistence\Migrations\20241219163300_CreateAttributeEntitiesTable.sql" />
+      <EmbeddedResource Include="Infrastructure\Persistence\Migrations\20241219163300_CreateAttributeEntitiesTable.sql" />
     </ItemGroup>
 
 </Project>

@@ -5,15 +5,15 @@ using SncSoftware.Extensions.Dapper.ServiceTests.Contracts;
 
 namespace SncSoftware.Extensions.Dapper.ServiceTests.Infrastructure.Persistence;
 
-public class TestEntityPostgresProvider
+public class EntityWithAttributesPostgresProvider
 {
-    public static async Task<TestEntity?> Get(Guid id)
+    public static async Task<EntityWithAttributes?> Get(Guid id, string? database = null)
     {
         const string Sql = """
-                           SELECT* FROM public."TestEntities" WHERE "Id" = @id LIMIT 1 
+                           SELECT* FROM public."AttributeEntities" WHERE "Id" = @id LIMIT 1 
                            """;
-        var postgresSettings = Settings.Configuration.GetSection("Postgres").Get<DatabaseSettings>();
-        var postgresDatabase = Settings.DatabaseName;
+        var postgresSettings = Settings.DatabaseSettings;
+        var postgresDatabase = database ?? Settings.DatabaseName;
 
         var connectionStringBuilder = new NpgsqlConnectionStringBuilder(postgresSettings.ConnectionString)
         {
@@ -22,19 +22,19 @@ public class TestEntityPostgresProvider
         var dataSource = new NpgsqlDataSourceBuilder(connectionStringBuilder.ConnectionString).Build();
 
         await using var connection = await dataSource.OpenConnectionAsync();
-        return await connection.QuerySingleOrDefaultAsync<TestEntity>(Sql, new
+        return await connection.QuerySingleOrDefaultAsync<EntityWithAttributes>(Sql, new
         {
             id
         });
     }
 
-    public static async Task<IEnumerable<TestEntity>> GetAll()
+    public static async Task<IEnumerable<EntityWithAttributes>> GetAll(string? database = null)
     {
         const string Sql = """
-                           SELECT* FROM public."TestEntities"
+                           SELECT* FROM public."AttributeEntities"
                            """;
-        var postgresSettings = Settings.Configuration.GetSection("Postgres").Get<DatabaseSettings>();
-        var postgresDatabase = Settings.DatabaseName;
+        var postgresSettings = Settings.DatabaseSettings;
+        var postgresDatabase = database ?? Settings.DatabaseName;
 
         var connectionStringBuilder = new NpgsqlConnectionStringBuilder(postgresSettings.ConnectionString)
         {
@@ -43,17 +43,17 @@ public class TestEntityPostgresProvider
         var dataSource = new NpgsqlDataSourceBuilder(connectionStringBuilder.ConnectionString).Build();
 
         await using var connection = await dataSource.OpenConnectionAsync();
-        return await connection.QueryAsync<TestEntity>(Sql);
+        return await connection.QueryAsync<EntityWithAttributes>(Sql);
     }
 
-    public static async Task Insert(TestEntity entity)
+    public static async Task Insert(EntityWithAttributes entityWithAttributes, string? database = null)
     {
         const string Sql = """
-                           INSERT INTO public."TestEntities"("Id", "Description", "Age", "Enabled")
+                           INSERT INTO public."AttributeEntities"("Id", "Description", "Age", "Enabled")
                            VALUES(@Id, @Description, @Age, @Enabled)
                            """;
-        var postgresSettings = Settings.Configuration.GetSection("Postgres").Get<DatabaseSettings>();
-        var postgresDatabase = Settings.DatabaseName;
+        var postgresSettings = Settings.DatabaseSettings;
+        var postgresDatabase = database ?? Settings.DatabaseName;
 
         var connectionStringBuilder = new NpgsqlConnectionStringBuilder(postgresSettings.ConnectionString)
         {
@@ -62,6 +62,6 @@ public class TestEntityPostgresProvider
         var dataSource = new NpgsqlDataSourceBuilder(connectionStringBuilder.ConnectionString).Build();
 
         await using var connection = await dataSource.OpenConnectionAsync();
-        await connection.ExecuteAsync(Sql, entity);
+        await connection.ExecuteAsync(Sql, entityWithAttributes);
     }
 }

@@ -6,27 +6,27 @@ using SncSoftware.Extensions.Dapper.ServiceTests.Contracts;
 using SncSoftware.Extensions.Dapper.ServiceTests.Infrastructure;
 using SncSoftware.Extensions.Dapper.ServiceTests.Infrastructure.Persistence;
 
-namespace SncSoftware.Extensions.Dapper.ServiceTests.Features;
+namespace SncSoftware.Extensions.Dapper.ServiceTests.Features.AttributeEntities;
 
 public partial class Update_Feature : FeatureFixture
 {
     private static readonly TestDatabaseContext DatabaseContext =
         ServiceCollectionFactory.Instance.ServiceProvider.GetRequiredService<TestDatabaseContext>();
 
-    private readonly TestEntity _entity;
-    private TestEntity _updatedEntity;
+    private readonly EntityWithAttributes _entity;
+    private EntityWithAttributes _updatedEntity;
 
     public Update_Feature()
     {
         var fixture = new Fixture();
-        _entity = fixture.Create<TestEntity>();
+        _entity = fixture.Create<EntityWithAttributes>();
     }
 
     private async Task Entity_exists_in_the_database()
     {
-        await TestEntityPostgresProvider.Insert(_entity);
+        await EntityWithAttributesPostgresProvider.Insert(_entity);
 
-        var entity = await TestEntityPostgresProvider.Get(_entity.Id);
+        var entity = await EntityWithAttributesPostgresProvider.Get(_entity.Id);
         entity.Should().NotBeNull();
         entity.Should().BeEquivalentTo(_entity);
     }
@@ -46,7 +46,7 @@ public partial class Update_Feature : FeatureFixture
 
     private async Task Updated_entity_is_saved_in_database()
     {
-        var entities = (await TestEntityPostgresProvider.GetAll()).ToList();
+        var entities = (await EntityWithAttributesPostgresProvider.GetAll()).ToList();
         entities.Should().NotBeNullOrEmpty();
         var entitiesForId = entities.Where(e => e.Id == _updatedEntity.Id).ToList();
         entitiesForId.Count.Should().Be(1);

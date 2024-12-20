@@ -6,7 +6,7 @@ namespace SncSoftware.Extensions.Dapper.ServiceTests.Infrastructure;
 public static class Settings
 {
     public static readonly string DatabaseName = $"dapper-library-{Guid.NewGuid()}";
-
+    public static DatabaseSettings DatabaseSettings { get; private set; }
     public static IConfiguration Configuration { get; private set; }
 
     static Settings()
@@ -24,5 +24,9 @@ public static class Settings
         };
         var configuration = builder.AddInMemoryCollection(configurationValues!).Build();
         Configuration = configuration;
+        DatabaseSettings = new DatabaseSettings
+        {
+            ConnectionString = connectionStringBuilder.ToString()
+        };
     }
 }

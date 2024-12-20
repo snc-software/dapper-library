@@ -77,14 +77,64 @@ public class DatabaseCollection<T> where T : new()
 
     #endregion
 
-    #region GetAll
+    #region Get Multiple
 
+    // TODO - Implement Order By
     /// <summary>
     /// Get all items
     /// </summary>
+    /// <param name="orderByPropertySelector"></param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns></returns>
-    public async Task<IEnumerable<T>> GetAll(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<T>> GetAll(
+        CancellationToken cancellationToken = default)
+    {
+        var query = new SqlBuilder<T>()
+            .Select()
+            .AllProperties()
+            .FromTable(_tableName)
+            .BuildQuery();
+
+        using var connection = await _sqlConnectionFactory.OpenConnection(cancellationToken);
+        return await connection.QueryAsync<T>(query.Sql);
+    }
+    
+    //TODO - IMPLEMENT
+    
+    /// <summary>
+    /// Get a page of items
+    /// </summary>
+    /// <param name="orderByPropertySelector"></param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns></returns>
+    public async Task<IEnumerable<T>> GetPage<TValue>(
+        int page,
+        int pageSize,
+        Expression<Func<T, TValue>>? orderByPropertySelector = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new SqlBuilder<T>()
+            .Select()
+            .AllProperties()
+            .FromTable(_tableName)
+            .BuildQuery();
+
+        using var connection = await _sqlConnectionFactory.OpenConnection(cancellationToken);
+        return await connection.QueryAsync<T>(query.Sql);
+    }
+    
+    /// <summary>
+    /// Get a page of items
+    /// </summary>
+    /// <param name="orderByPropertySelector"></param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns></returns>
+    public async Task<IEnumerable<T>> GetFilteredPage<TValue>(
+        int page,
+        int pageSize,
+        WhereClauseSqlBuilder<T>? filter = null,
+        Expression<Func<T, TValue>>? orderByPropertySelector = null,
+        CancellationToken cancellationToken = default)
     {
         var query = new SqlBuilder<T>()
             .Select()

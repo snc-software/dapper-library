@@ -2,8 +2,8 @@ using SncSoftware.Extensions.Dapper.Attributes;
 
 namespace SncSoftware.Extensions.Dapper.ServiceTests.Contracts;
 
-[TableName("TestEntities")]
-public record TestEntity
+[TableName("AttributeEntities")]
+public record EntityWithAttributes
 {
     [PrimaryIdentifier]
     public Guid Id { get; set; }
